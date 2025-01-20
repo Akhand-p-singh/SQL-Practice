@@ -1,0 +1,23 @@
+
+https://datalemur.com/questions/2nd-ride-delay
+
+with cte as ( 
+Select u.user_id, registration_date, r.ride_id, ride_date,
+lead(ride_date) over(partition by r.user_id order by registration_date) nxt
+from users u
+join rides r 
+on u.user_id = r.user_id
+),
+
+cte2 as (
+select *, nxt - ride_date as diff
+from cte
+where registration_date = ride_date),
+
+cte3 as (
+Select *
+from cte2
+where diff is not Null ) 
+
+select Round(avg(diff),2) average_delay
+from cte3

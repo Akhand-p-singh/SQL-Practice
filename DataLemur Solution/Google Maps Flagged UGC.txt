@@ -1,0 +1,22 @@
+https://datalemur.com/questions/off-topic-maps-ugc
+
+
+
+with reviews as (
+Select p.place_id, place_name, place_category, content_id, content_tag
+from place_info p
+join maps_ugc_review m
+on p.place_id = m.place_id
+where content_tag = 'Off-topic'
+)
+ , cte2 as (
+select place_category, count(content_tag) ttl 
+from reviews
+group by place_category 
+order by ttl desc, place_category )
+ , cte3 as (
+Select *, RANK() OVER (ORDER BY ttl DESC) AS top_place
+from cte2) 
+select place_category
+from cte3
+where top_place = 1
